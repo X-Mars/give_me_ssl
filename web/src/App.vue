@@ -1,85 +1,360 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView, useRouter } from 'vue-router'
+import { useAuthStore } from './stores/auth'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const auth = useAuthStore()
+const collapsed = ref(false)
+const router = useRouter()
+const { t, locale } = useI18n()
+
+function logout() { 
+  auth.logout()
+  router.push('/login') 
+}
+
+function toggleLocale() {
+  locale.value = locale.value === 'zh-CN' ? 'en' : 'zh-CN'
+}
+
+const menuItems = computed(() => [
+  { index: '/', icon: 'Grid', title: t('dashboard') },
+  { index: '/certificates', icon: 'Document', title: t('certificates') },
+  { index: '/providers', icon: 'Setting', title: t('providers') },
+  { index: '/settings', icon: 'Tools', title: t('settings') },
+  { index: '/about', icon: 'InfoFilled', title: t('about') }
+])
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="app-container">
+    <!-- Authenticated Layout -->
+    <div class="layout" v-if="auth.user">
+      <!-- Sidebar -->
+      <aside class="sidebar" :class="{ collapsed }">
+        <div class="sidebar-header">
+          <div class="logo" v-if="!collapsed">
+            <el-icon class="logo-icon"><Lock /></el-icon>
+            <span class="logo-text gradient-text">SSL Manager</span>
+          </div>
+          <el-icon v-else class="logo-icon-collapsed"><Lock /></el-icon>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <el-menu 
+            :default-active="$route.path" 
+            class="sidebar-menu" 
+            router
+            :collapse="collapsed"
+            background-color="transparent"
+            text-color="rgba(255,255,255,0.8)"
+            active-text-color="#fff"
+          >
+            <el-menu-item 
+              v-for="item in menuItems" 
+              :key="item.index"
+              :index="item.index"
+              class="menu-item"
+            >
+              <el-icon><component :is="item.icon" /></el-icon>
+              <span>{{ item.title }}</span>
+            </el-menu-item>
+          </el-menu>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <el-button 
+            v-if="!collapsed"
+            class="logout-btn" 
+            @click="logout"
+            size="small"
+          >
+            <el-icon><SwitchButton /></el-icon>
+            {{ t('logout') }}
+          </el-button>
+          <el-button 
+            v-else
+            class="logout-btn-collapsed" 
+            @click="logout"
+            size="small"
+            circle
+          >
+            <el-icon><SwitchButton /></el-icon>
+          </el-button>
+        </div>
+      </aside>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar glass-card">
+          <div class="topbar-left">
+            <el-button 
+              class="collapse-btn"
+              @click="collapsed = !collapsed"
+              text
+              circle
+            >
+              <el-icon><Menu /></el-icon>
+            </el-button>
+            <h1 class="page-title">{{ $route.meta.title || t('dashboard') }}</h1>
+          </div>
+          
+          <div class="topbar-right">
+            <el-button 
+              class="locale-btn"
+              @click="toggleLocale"
+              text
+              circle
+            >
+              <el-icon><Globe /></el-icon>
+            </el-button>
+            
+            <div class="user-info">
+              <el-avatar 
+                class="user-avatar" 
+                :size="32"
+                :src="auth.user?.avatar"
+              >
+                <el-icon><User /></el-icon>
+              </el-avatar>
+              <span class="username">{{ auth.user?.username }}</span>
+            </div>
+          </div>
+        </header>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+        <!-- Page Content -->
+        <main class="page-content">
+          <transition name="fade" mode="out-in">
+            <RouterView />
+          </transition>
+        </main>
+      </div>
     </div>
-  </header>
 
-  <RouterView />
+    <!-- Login Layout -->
+    <div v-else class="login-layout">
+      <RouterView />
+    </div>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+}
+
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+  position: relative;
+  z-index: 100;
+  box-shadow: var(--shadow-xl);
+}
+
+.sidebar.collapsed {
+  width: 64px;
+}
+
+.sidebar-header {
+  padding: var(--space-lg);
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
 }
 
-nav {
+.logo-icon {
+  font-size: 24px;
+  color: white;
+}
+
+.logo-icon-collapsed {
+  font-size: 24px;
+  color: white;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: var(--space-md) 0;
+}
+
+.sidebar-menu {
+  border: none;
+}
+
+.menu-item {
+  margin: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-lg);
+  transition: var(--transition);
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-item.is-active {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.sidebar-footer {
+  padding: var(--space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.logout-btn-collapsed {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+/* Main Content Styles */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-nav a:first-of-type {
-  border: 0;
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  margin: var(--space-md);
+  margin-bottom: 0;
+  border-radius: var(--radius-xl);
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.collapse-btn {
+  color: var(--primary-color);
+  font-size: 18px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.locale-btn {
+  color: var(--secondary-color);
+  font-size: 18px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.user-avatar {
+  border: 2px solid var(--primary-color);
+}
+
+.username {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.page-content {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow: auto;
+}
+
+/* Login Layout */
+.login-layout {
+  min-height: 100vh;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
+  
+  .sidebar.collapsed {
+    transform: translateX(0);
+    width: 64px;
   }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  
+  .main-content {
+    width: 100%;
   }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  
+  .topbar {
+    margin: var(--space-sm);
+    margin-bottom: 0;
+  }
+  
+  .page-content {
+    padding: var(--space-md);
   }
 }
 </style>

@@ -1,0 +1,8 @@
+Django==5.2.6
+djangorestframework
+djangorestframework-simplejwt
+requests
+pyecharts
+# Aliyun / cloud SDK placeholders (install when needed)
+django-cors-headers
+
