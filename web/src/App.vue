@@ -4,6 +4,7 @@ import { useAuthStore } from './stores/auth'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLanguage, getCurrentLanguage, type Locale } from './plugins/i18n'
+import { generateMenuFromRoutes } from './utils/menu'
 import { 
   Menu, SwitchButton, Switch
 } from '@element-plus/icons-vue'
@@ -24,13 +25,14 @@ function toggleLocale() {
   setLanguage(newLang)
 }
 
-const menuItems = computed(() => [
-  { index: '/', icon: 'Grid', title: t('nav.dashboard') },
-  { index: '/certificates', icon: 'Document', title: t('nav.certificates') },
-  { index: '/providers', icon: 'Key', title: t('nav.providers') },
-  { index: '/settings', icon: 'Tools', title: t('nav.settings') },
-  { index: '/about', icon: 'InfoFilled', title: t('nav.about') }
-])
+const menuItems = computed(() => {
+  const routes = router.getRoutes()
+  return generateMenuFromRoutes(routes).map(item => ({
+    index: item.index,
+    icon: item.icon,
+    title: t(item.title)
+  }))
+})
 </script>
 
 <template>
@@ -104,7 +106,7 @@ const menuItems = computed(() => [
             >
               <el-icon><Menu /></el-icon>
             </el-button>
-            <h1 class="page-title">{{ $route.meta.title || t('nav.dashboard') }}</h1>
+            <h1 class="page-title">{{ $route.meta?.title ? t($route.meta.title) : t('nav.dashboard') }}</h1>
           </div>
           
           <div class="topbar-right">
@@ -219,6 +221,21 @@ const menuItems = computed(() => [
 
 .sidebar-menu {
   border: none;
+}
+
+/* Fix icon centering when sidebar is collapsed */
+.sidebar.collapsed .sidebar-menu .menu-item {
+  padding: 0 !important;
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-menu .el-menu-item {
+  padding: 0 !important;
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-menu .el-menu-item .el-icon {
+  margin-right: 0 !important;
 }
 
 .menu-item {

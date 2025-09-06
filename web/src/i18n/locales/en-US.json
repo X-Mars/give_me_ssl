@@ -56,7 +56,14 @@
     "loginError": "Login failed, please check your username and password",
     "loginSuccess": "Login successful",
     "usernameRequired": "Please enter username",
-    "passwordRequired": "Please enter password"
+    "passwordRequired": "Please enter password",
+    "welcomeBack": "Welcome Back",
+    "pleaseLogin": "Please sign in to your account",
+    "systemDescription": "Professional SSL certificate management platform providing security for your websites",
+    "feature1": "Automatic certificate application and renewal",
+    "feature2": "Multiple certificate provider support",
+    "feature3": "Real-time monitoring and notifications",
+    "footerText": "Give Me SSL - Free SSL Certificate Management Platform"
   },
   "dashboard": {
     "title": "Dashboard",

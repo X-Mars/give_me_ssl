@@ -57,7 +57,12 @@
     "loginFailed": "登录失败",
     "invalidCredentials": "用户名或密码错误",
     "welcomeBack": "欢迎回来",
-    "pleaseLogin": "请登录您的账户"
+    "pleaseLogin": "请登录您的账户",
+    "systemDescription": "专业的 SSL 证书管理平台，为您的网站提供安全保障",
+    "feature1": "自动证书申请和续期",
+    "feature2": "多种证书提供商支持",
+    "feature3": "实时监控和通知",
+    "footerText": "Give Me SSL - 免费 SSL 证书管理平台"
   },
   "dashboard": {
     "title": "SSL 证书管理系统",

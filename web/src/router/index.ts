@@ -10,11 +10,54 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: {
+        title: 'nav.dashboard',
+        icon: 'Grid',
+        showInMenu: true,
+        order: 1
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/LoginView.vue'),
+      meta: {
+        title: 'nav.login',
+        showInMenu: false
+      }
+    },
+    {
+      path: '/certificates',
+      name: 'certificates',
+      component: () => import('../views/CertificatesView.vue'),
+      meta: {
+        title: 'nav.certificates',
+        icon: 'Document',
+        showInMenu: true,
+        order: 2
+      }
+    },
+    {
+      path: '/providers',
+      name: 'providers',
+      component: () => import('../views/ProvidersView.vue'),
+      meta: {
+        title: 'nav.providers',
+        icon: 'Key',
+        showInMenu: true,
+        order: 3
+      }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('../views/SettingsView.vue'),
+      meta: {
+        title: 'nav.settings',
+        icon: 'Tools',
+        showInMenu: true,
+        order: 4
+      }
     },
     {
       path: '/about',
@@ -23,21 +66,12 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
-    },
-    {
-      path: '/certificates',
-      name: 'certificates',
-      component: () => import('../views/CertificatesView.vue')
-    },
-    {
-      path: '/providers',
-      name: 'providers',
-      component: () => import('../views/ProvidersView.vue')
-    },
-    {
-      path: '/settings',
-      name: 'settings',
-      component: () => import('../views/SettingsView.vue')
+      meta: {
+        title: 'nav.about',
+        icon: 'InfoFilled',
+        showInMenu: true,
+        order: 5
+      }
     },
   ],
 })
