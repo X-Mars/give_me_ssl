@@ -41,9 +41,16 @@
             </el-form-item>
             
             <el-form-item :label="$t('settings.defaultLanguage')">
-              <el-select v-model="settings.general.default_language">
-                <el-option label="English" value="en" />
-                <el-option label="中文" value="zh" />
+              <el-select 
+                v-model="settings.general.default_language"
+                @change="handleLanguageChange"
+              >
+                <el-option 
+                  v-for="lang in supportedLanguages"
+                  :key="lang.value"
+                  :label="lang.label"
+                  :value="lang.value"
+                />
               </el-select>
             </el-form-item>
             
@@ -59,7 +66,7 @@
             </el-form-item>
             
             <el-form-item :label="$t('settings.theme')">
-              <el-radio-group v-model="settings.general.theme">
+              <el-radio-group v-model="settings.general.theme" @change="handleThemeChange">
                 <el-radio value="light">{{ $t('settings.light') }}</el-radio>
                 <el-radio value="dark">{{ $t('settings.dark') }}</el-radio>
                 <el-radio value="auto">{{ $t('settings.auto') }}</el-radio>
@@ -336,12 +343,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import {
   Check, Setting, Document, Bell, Lock, FolderOpened, Download
 } from '@element-plus/icons-vue'
 import { apiFetch } from '../utils/http'
+import { setLanguage, getCurrentLanguage, getSupportedLanguages, type Locale } from '../plugins/i18n'
+import { useThemeStore, type ThemeMode } from '../stores/theme'
+
+const { t, locale } = useI18n() // 添加 locale 引用以确保响应性
+const themeStore = useThemeStore() // 添加主题store引用
 
 interface PlatformSetting {
   id: number
@@ -392,12 +405,15 @@ interface SettingsData {
 const saving = ref(false)
 const creatingBackup = ref(false)
 
+// 支持的语言列表
+const supportedLanguages = getSupportedLanguages()
+
 const settings = reactive({
   general: {
     system_name: 'SSL Certificate Manager',
-    default_language: 'en',
+    default_language: getCurrentLanguage(), // 使用当前语言作为默认值
     timezone: 'UTC',
-    theme: 'light'
+    theme: themeStore.theme // 从主题store获取当前主题
   },
   certificates: {
     auto_renewal_enabled: true,
@@ -428,6 +444,16 @@ const settings = reactive({
   }
 })
 
+// 监听语言变化，同步到设置表单
+watch(locale, (newLocale) => {
+  settings.general.default_language = String(newLocale) as Locale
+}, { immediate: true })
+
+// 监听主题store变化，同步到设置表单
+watch(() => themeStore.theme, (newTheme) => {
+  settings.general.theme = newTheme
+}, { immediate: true })
+
 const timezones = [
   { label: 'UTC', value: 'UTC' },
   { label: 'America/New_York', value: 'America/New_York' },
@@ -439,20 +465,48 @@ const timezones = [
 ]
 
 // Methods
+// 处理主题变更
+function handleThemeChange(newTheme: string) {
+  // 立即应用主题变更
+  themeStore.setTheme(newTheme as ThemeMode)
+  
+  // 显示成功消息
+  ElMessage.success(t('settings.themeChanged'))
+}
+
+// 处理语言变更
+function handleLanguageChange(newLanguage: string) {
+  // 映射简短语言代码到完整代码
+  const languageMap: Record<string, Locale> = {
+    'zh': 'zh-CN',
+    'zh-CN': 'zh-CN',
+    'en': 'en-US',
+    'en-US': 'en-US'
+  }
+  
+  const mappedLanguage = languageMap[newLanguage] || 'en-US'
+  
+  // 立即切换应用语言
+  setLanguage(mappedLanguage)
+  
+  // 显示成功消息（会使用新语言显示）
+  ElMessage.success(t('settings.languageChanged'))
+}
+
 async function loadSettings() {
   try {
     const result = await apiFetch<PlatformSetting[]>('/platform-settings/')
     if (result.code === 0 && Array.isArray(result.data)) {
       // Convert key-value pairs to structured settings
-      const loadedSettings: Record<string, any> = {}
+      const loadedSettings: Record<string, unknown> = {}
       result.data.forEach((setting: PlatformSetting) => {
         const keys = setting.key.split('.')
-        let current = loadedSettings
+        let current: Record<string, unknown> = loadedSettings
         for (let i = 0; i < keys.length - 1; i++) {
           if (!current[keys[i]]) {
             current[keys[i]] = {}
           }
-          current = current[keys[i]]
+          current = current[keys[i]] as Record<string, unknown>
         }
         try {
           current[keys[keys.length - 1]] = JSON.parse(setting.value)
@@ -463,6 +517,9 @@ async function loadSettings() {
       
       // Merge loaded settings with defaults
       Object.assign(settings, loadedSettings)
+      
+      // 同步当前语言到设置中
+      settings.general.default_language = getCurrentLanguage()
     }
   } catch (error) {
     console.error('Load settings error:', error)

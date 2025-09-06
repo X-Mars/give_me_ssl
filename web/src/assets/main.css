@@ -12,7 +12,11 @@
   --gradient-primary: linear-gradient(135deg, #ff6b9d 0%, #ff8a80 50%, #ffb347 100%);
   --gradient-secondary: linear-gradient(135deg, #7c6aff 0%, #67c7ff 100%);
   --gradient-success: linear-gradient(135deg, #59d8a1 0%, #6bcf7f 100%);
-  
+}
+
+/* Light Theme */
+:root,
+.light-theme {
   /* Background Colors */
   --bg-primary: #f8f9ff;
   --bg-secondary: #ffffff;
@@ -32,6 +36,34 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Theme */
+.dark-theme {
+  /* Background Colors */
+  --bg-primary: #1a202c;
+  --bg-secondary: #2d3748;
+  --bg-light: #2d3748;
+  --bg-dark: #4a5568;
+  
+  /* Text Colors */
+  --text-primary: #f7fafc;
+  --text-secondary: #e2e8f0;
+  --text-light: #a0aec0;
+  --text-white: #ffffff;
+  
+  /* Border & Shadow */
+  --border-color: #4a5568;
+  --border-light: #2d3748;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+}
+
+:root,
+.light-theme,
+.dark-theme {
   
   /* Spacing */
   --space-xs: 0.25rem;
@@ -92,10 +124,16 @@ body {
 /* Glass morphism effect */
 .glass-card {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
+}
+
+.dark-theme .glass-card {
+  background: rgba(45, 55, 72, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Gradient text */

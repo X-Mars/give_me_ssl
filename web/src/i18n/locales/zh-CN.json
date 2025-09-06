@@ -257,7 +257,9 @@
     "backupRetention": "备份保留",
     "backupRetentionHint": "保留备份文件的天数",
     "storagePath": "存储路径",
-    "createBackupNow": "立即创建备份"
+    "createBackupNow": "立即创建备份",
+    "languageChanged": "语言已切换",
+    "themeChanged": "主题已切换"
   },
   "nav": {
     "dashboard": "仪表板",
@@ -266,7 +268,8 @@
     "settings": "设置",
     "profile": "个人资料",
     "logout": "退出登录",
-    "about": "关于"
+    "about": "关于",
+    "switchLanguage": "切换语言"
   },
   "validation": {
     "required": "此字段为必填项",

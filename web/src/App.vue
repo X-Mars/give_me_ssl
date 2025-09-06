@@ -5,7 +5,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLanguage, getCurrentLanguage, type Locale } from './plugins/i18n'
 import { 
-  Menu, Operation, SwitchButton
+  Menu, SwitchButton, Switch
 } from '@element-plus/icons-vue'
 
 const auth = useAuthStore()
@@ -27,7 +27,7 @@ function toggleLocale() {
 const menuItems = computed(() => [
   { index: '/', icon: 'Grid', title: t('nav.dashboard') },
   { index: '/certificates', icon: 'Document', title: t('nav.certificates') },
-  { index: '/providers', icon: 'Setting', title: t('nav.providers') },
+  { index: '/providers', icon: 'Key', title: t('nav.providers') },
   { index: '/settings', icon: 'Tools', title: t('nav.settings') },
   { index: '/about', icon: 'InfoFilled', title: t('nav.about') }
 ])
@@ -108,14 +108,20 @@ const menuItems = computed(() => [
           </div>
           
           <div class="topbar-right">
-            <el-button 
-              class="locale-btn"
-              @click="toggleLocale"
-              text
-              circle
+            <el-tooltip 
+              :content="t('nav.switchLanguage')"
+              placement="bottom"
+              effect="dark"
             >
-              <el-icon><Operation /></el-icon>
-            </el-button>
+              <el-button 
+                class="locale-btn"
+                @click="toggleLocale"
+                text
+                circle
+              >
+                <el-icon><Switch /></el-icon>
+              </el-button>
+            </el-tooltip>
             
             <div class="user-info">
               <el-avatar 

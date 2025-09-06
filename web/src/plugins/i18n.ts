@@ -45,7 +45,8 @@ export const i18n = createI18n({
   locale: getStoredLanguage(),
   fallbackLocale: 'en-US',
   messages,
-  globalInjection: true // 全局注入 $t
+  globalInjection: true, // 全局注入 $t
+  allowComposition: true // 允许 composition API 和 legacy API 同时使用
 })
 
 // 监听语言变化，保存到 localStorage
@@ -56,9 +57,6 @@ export function setLanguage(locale: Locale) {
     
     // 更新 HTML lang 属性
     document.documentElement.lang = locale
-    
-    // 触发页面刷新以应用新语言
-    window.location.reload()
   }
 }
 

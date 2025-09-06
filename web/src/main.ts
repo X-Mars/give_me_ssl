@@ -1,12 +1,11 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { i18n } from './plugins/i18n'
-
+import { useThemeStore } from './stores/theme'
 import App from './App.vue'
 import router from './router'
 
@@ -18,8 +17,12 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.use(createPinia())
+
+// Initialize theme after pinia is set up
+const themeStore = useThemeStore()
+themeStore.initTheme()
+
 app.use(router)
 app.use(ElementPlus)
 app.use(i18n)
-
 app.mount('#app')

@@ -43,7 +43,8 @@
     "settings": "Settings",
     "profile": "Profile",
     "logout": "Logout",
-    "about": "About"
+    "about": "About",
+    "switchLanguage": "Switch Language"
   },
   "auth": {
     "login": "Login",
@@ -257,7 +258,9 @@
     "backupRetention": "Backup Retention",
     "backupRetentionHint": "Number of days to keep backup files",
     "storagePath": "Storage Path",
-    "createBackupNow": "Create Backup Now"
+    "createBackupNow": "Create Backup Now",
+    "languageChanged": "Language changed successfully",
+    "themeChanged": "Theme changed successfully"
   },
   "validation": {
     "required": "This field is required",
