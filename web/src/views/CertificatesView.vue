@@ -3,17 +3,17 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">SSL Certificates</h1>
-        <p class="page-subtitle">Manage your SSL certificates and monitor their status</p>
+        <h1 class="page-title gradient-text">{{ $t('certificates.title') }}</h1>
+        <p class="page-subtitle">{{ $t('certificates.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <el-button @click="showFilters = !showFilters">
           <el-icon><Filter /></el-icon>
-          Filters
+          {{ $t('common.filters') }}
         </el-button>
-        <el-button type="primary" class="btn-gradient" @click="showCreateDialog = true">
+                <el-button type="primary" class="glass-button" @click="createCertificate">
           <el-icon><Plus /></el-icon>
-          New Certificate
+          {{ $t('certificates.createNew') }}
         </el-button>
       </div>
     </div>
@@ -23,7 +23,7 @@
       <div class="filter-grid">
         <el-input
           v-model="filters.search"
-          placeholder="Search certificates..."
+          :placeholder="$t('certificates.searchPlaceholder')"
           clearable
           @input="handleSearch"
         >
@@ -34,32 +34,32 @@
         
         <el-select
           v-model="filters.status"
-          placeholder="Status"
+          :placeholder="$t('certificates.status')"
           clearable
           @change="handleFilter"
         >
-          <el-option label="All Status" value="" />
-          <el-option label="Active" value="active" />
-          <el-option label="Pending" value="pending" />
-          <el-option label="Expired" value="expired" />
-          <el-option label="Error" value="error" />
+          <el-option :label="$t('common.all')" value="" />
+          <el-option :label="$t('certificates.statuses.active')" value="active" />
+          <el-option :label="$t('certificates.statuses.pending')" value="pending" />
+          <el-option :label="$t('certificates.statuses.expired')" value="expired" />
+          <el-option :label="$t('certificates.statuses.error')" value="error" />
         </el-select>
         
         <el-select
           v-model="filters.provider"
-          placeholder="Provider"
+          :placeholder="$t('certificates.provider')"
           clearable
           @change="handleFilter"
         >
-          <el-option label="All Providers" value="" />
+          <el-option :label="$t('common.all')" value="" />
           <el-option label="Let's Encrypt" value="letsencrypt" />
           <el-option label="ZeroSSL" value="zerossl" />
-          <el-option label="Manual" value="manual" />
+          <el-option :label="$t('certificates.manual')" value="manual" />
         </el-select>
         
         <el-button @click="fetchData" :loading="loading" class="refresh-btn">
           <el-icon><Refresh /></el-icon>
-          Refresh
+          {{ $t('common.refresh') }}
         </el-button>
       </div>
     </div>
@@ -72,11 +72,11 @@
         stripe
         class="certificates-table"
         @sort-change="handleSort"
-        empty-text="No certificates found"
+        :empty-text="$t('certificates.noCertificates')"
       >
         <el-table-column type="selection" width="50" />
         
-        <el-table-column prop="domain" label="Domain" sortable min-width="200">
+        <el-table-column prop="domain" :label="$t('certificates.domain')" sortable min-width="200">
           <template #default="{ row }">
             <div class="domain-cell">
               <div class="domain-info">
@@ -90,7 +90,7 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="status" label="Status" width="120">
+        <el-table-column prop="status" :label="$t('certificates.status')" width="120">
           <template #default="{ row }">
             <el-tag 
               :type="getStatusType(row.status)" 
@@ -108,7 +108,7 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="provider" label="Provider" width="140">
+        <el-table-column prop="provider" :label="$t('certificates.provider')" width="140">
           <template #default="{ row }">
             <div class="provider-cell">
               <div class="provider-icon-wrapper">
@@ -123,7 +123,7 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="created_at" label="Created" width="120" sortable>
+        <el-table-column prop="created_at" :label="$t('certificates.created')" width="120" sortable>
           <template #default="{ row }">
             <div class="date-cell">
               {{ formatDate(row.created_at) }}
@@ -131,7 +131,7 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="expires_at" label="Expires" width="120" sortable>
+        <el-table-column prop="expires_at" :label="$t('certificates.expires')" width="120" sortable>
           <template #default="{ row }">
             <div class="date-cell">
               <span :class="getExpiryClass(row.expires_at)">
@@ -144,22 +144,22 @@
           </template>
         </el-table-column>
         
-        <el-table-column label="Actions" width="180" fixed="right">
+        <el-table-column :label="$t('common.actions')" width="180" fixed="right">
           <template #default="{ row }">
             <div class="action-buttons">
-              <el-tooltip content="View Details">
+              <el-tooltip :content="$t('certificates.viewDetails')">
                 <el-button size="small" circle @click="viewCertificate(row)">
                   <el-icon><View /></el-icon>
                 </el-button>
               </el-tooltip>
               
-              <el-tooltip content="Download">
+              <el-tooltip :content="$t('certificates.download')">
                 <el-button size="small" circle @click="downloadCertificate(row)">
                   <el-icon><Download /></el-icon>
                 </el-button>
               </el-tooltip>
               
-              <el-tooltip content="Renew">
+              <el-tooltip :content="$t('certificates.renew')">
                 <el-button 
                   size="small" 
                   circle 
@@ -171,15 +171,15 @@
                 </el-button>
               </el-tooltip>
               
-              <el-dropdown @command="(cmd) => handleAction(cmd, row)">
+              <el-dropdown @command="createDropdownHandler(row)">
                 <el-button size="small" circle>
                   <el-icon><MoreFilled /></el-icon>
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item command="edit">Edit</el-dropdown-item>
-                    <el-dropdown-item command="revoke">Revoke</el-dropdown-item>
-                    <el-dropdown-item command="delete" divided>Delete</el-dropdown-item>
+                    <el-dropdown-item command="edit">{{ $t('common.edit') }}</el-dropdown-item>
+                    <el-dropdown-item command="revoke">{{ $t('certificates.revoke') }}</el-dropdown-item>
+                    <el-dropdown-item command="delete" divided>{{ $t('common.delete') }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -205,66 +205,66 @@
     <!-- Create Certificate Dialog -->
     <el-dialog
       v-model="showCreateDialog"
-      title="Create New Certificate"
+      :title="$t('certificates.createNew')"
       width="600px"
       :close-on-click-modal="false"
     >
       <div class="create-form">
         <el-form :model="createForm" label-width="120px">
-          <el-form-item label="Domain">
+          <el-form-item :label="$t('certificates.domain')">
             <el-input v-model="createForm.domain" placeholder="example.com" />
           </el-form-item>
-          <el-form-item label="Provider">
-            <el-select v-model="createForm.provider" placeholder="Select provider">
+          <el-form-item :label="$t('certificates.provider')">
+            <el-select v-model="createForm.provider" :placeholder="$t('common.selectProvider')">
               <el-option label="Let's Encrypt" value="letsencrypt" />
               <el-option label="ZeroSSL" value="zerossl" />
-              <el-option label="Manual" value="manual" />
+              <el-option :label="$t('certificates.manual')" value="manual" />
             </el-select>
           </el-form-item>
-          <el-form-item label="Auto Renew">
+          <el-form-item :label="$t('certificates.autoRenew')">
             <el-switch v-model="createForm.auto_renew" />
           </el-form-item>
         </el-form>
       </div>
       <template #footer>
-        <el-button @click="showCreateDialog = false">Cancel</el-button>
-        <el-button type="primary" @click="createCertificate">Create</el-button>
+        <el-button @click="showCreateDialog = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="createCertificate">{{ $t('common.create') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- Certificate Details Dialog -->
     <el-dialog
       v-model="showDetailsDialog"
-      title="Certificate Details"
+      :title="$t('certificates.details')"
       width="800px"
     >
       <div v-if="selectedCertificate" class="cert-details">
         <div class="detail-grid">
           <div class="detail-item">
-            <label>Domain:</label>
+            <label>{{ $t('certificates.domain') }}:</label>
             <span>{{ selectedCertificate.domain }}</span>
           </div>
           <div class="detail-item">
-            <label>Status:</label>
+            <label>{{ $t('certificates.status') }}:</label>
             <el-tag :type="getStatusType(selectedCertificate.status)">
-              {{ getStatusText(selectedCertificate.status) }}
+              {{ $t(`certificates.statuses.${selectedCertificate.status}`) }}
             </el-tag>
           </div>
           <div class="detail-item">
-            <label>Provider:</label>
+            <label>{{ $t('certificates.provider') }}:</label>
             <span>{{ getProviderName(selectedCertificate.provider) }}</span>
           </div>
           <div class="detail-item">
-            <label>Created:</label>
+            <label>{{ $t('certificates.created') }}:</label>
             <span>{{ formatDate(selectedCertificate.created_at) }}</span>
           </div>
           <div class="detail-item">
-            <label>Expires:</label>
+            <label>{{ $t('certificates.expires') }}:</label>
             <span>{{ formatDate(selectedCertificate.expires_at) }}</span>
           </div>
           <div class="detail-item">
-            <label>Auto Renew:</label>
-            <span>{{ selectedCertificate.auto_renew ? 'Yes' : 'No' }}</span>
+            <label>{{ $t('certificates.autoRenew') }}:</label>
+            <span>{{ selectedCertificate.auto_renew ? $t('common.yes') : $t('common.no') }}</span>
           </div>
         </div>
       </div>
@@ -275,11 +275,14 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import {
   Plus, Filter, Search, CircleCheck, Clock, Warning, Close,
   View, Download, Refresh, MoreFilled, Key, Lock, Document
 } from '@element-plus/icons-vue'
 import { apiFetch } from '../utils/http'
+
+const { t } = useI18n()
 
 interface Certificate {
   id: number
@@ -317,7 +320,7 @@ const createForm = reactive({
 
 // Computed
 const filteredCertificates = computed(() => {
-  let result = certificates.value
+  let result = Array.isArray(certificates.value) ? certificates.value : []
 
   if (filters.search) {
     result = result.filter(cert => 
@@ -355,11 +358,11 @@ function getStatusType(status: Certificate['status']) {
 
 function getStatusText(status: Certificate['status']) {
   switch (status) {
-    case 'active': return 'Active'
-    case 'pending': return 'Pending'
-    case 'expired': return 'Expired'
-    case 'error': return 'Error'
-    default: return 'Unknown'
+    case 'active': return t('certificates.statuses.active')
+    case 'pending': return t('certificates.statuses.pending')
+    case 'expired': return t('certificates.statuses.expired')
+    case 'error': return t('certificates.statuses.error')
+    default: return t('certificates.statuses.unknown')
   }
 }
 
@@ -367,7 +370,7 @@ function getProviderName(provider: string) {
   switch (provider) {
     case 'letsencrypt': return "Let's Encrypt"
     case 'zerossl': return 'ZeroSSL'
-    case 'manual': return 'Manual'
+    case 'manual': return t('certificates.manual')
     default: return provider
   }
 }
@@ -397,10 +400,10 @@ function getExpiryText(expiryDate: string) {
   const now = new Date()
   const daysUntilExpiry = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   
-  if (daysUntilExpiry < 0) return `Expired ${Math.abs(daysUntilExpiry)} days ago`
-  if (daysUntilExpiry === 0) return 'Expires today'
-  if (daysUntilExpiry === 1) return 'Expires tomorrow'
-  return `${daysUntilExpiry} days left`
+  if (daysUntilExpiry < 0) return t('certificates.expiredDaysAgo', { days: Math.abs(daysUntilExpiry) })
+  if (daysUntilExpiry === 0) return t('certificates.expiresToday')
+  if (daysUntilExpiry === 1) return t('certificates.expiresTomorrow')
+  return t('certificates.daysLeft', { days: daysUntilExpiry })
 }
 
 function handleSearch() {
@@ -435,49 +438,55 @@ function downloadCertificate(certificate: Certificate) {
 
 function renewCertificate(certificate: Certificate) {
   ElMessageBox.confirm(
-    `Are you sure you want to renew the certificate for ${certificate.domain}?`,
-    'Confirm Renewal',
+    t('certificates.renewConfirmMessage', { domain: certificate.domain }),
+    t('certificates.renewConfirmTitle'),
     {
-      confirmButtonText: 'Renew',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning'
     }
   ).then(() => {
-    ElMessage.success('Certificate renewal initiated')
+    ElMessage.success(t('certificates.renewSuccess'))
   }).catch(() => {
     // User cancelled
   })
 }
 
-function handleAction(command: string, certificate: Certificate) {
-  switch (command) {
+// Helper to create dropdown command handler for a specific row
+const createDropdownHandler = (row: Certificate) => {
+  return (cmd: unknown) => handleAction(cmd, row)
+}
+
+function handleAction(command: unknown, certificate: Certificate) {
+  const cmd = String(command)
+  switch (cmd) {
     case 'edit':
-      ElMessage.info(`Edit certificate for ${certificate.domain}`)
+      ElMessage.info(t('certificates.editMessage', { domain: certificate.domain }))
       break
     case 'revoke':
       ElMessageBox.confirm(
-        `Are you sure you want to revoke the certificate for ${certificate.domain}?`,
-        'Confirm Revocation',
+        t('certificates.revokeConfirmMessage', { domain: certificate.domain }),
+        t('certificates.revokeConfirmTitle'),
         {
-          confirmButtonText: 'Revoke',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
           type: 'warning'
         }
       ).then(() => {
-        ElMessage.success('Certificate revoked')
+        ElMessage.success(t('certificates.revokeSuccess'))
       })
       break
     case 'delete':
       ElMessageBox.confirm(
-        `Are you sure you want to delete the certificate for ${certificate.domain}?`,
-        'Confirm Deletion',
+        t('certificates.deleteConfirmMessage', { domain: certificate.domain }),
+        t('certificates.deleteConfirmTitle'),
         {
-          confirmButtonText: 'Delete',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
           type: 'error'
         }
       ).then(() => {
-        ElMessage.success('Certificate deleted')
+        ElMessage.success(t('certificates.deleteSuccess'))
       })
       break
   }
@@ -485,12 +494,12 @@ function handleAction(command: string, certificate: Certificate) {
 
 function createCertificate() {
   if (!createForm.domain || !createForm.provider) {
-    ElMessage.warning('Please fill in all required fields')
+    ElMessage.warning(t('certificates.fillRequiredFields'))
     return
   }
   
   // TODO: Call API to create certificate
-  ElMessage.success(`Creating certificate for ${createForm.domain}`)
+  ElMessage.success(t('certificates.createSuccess', { domain: createForm.domain }))
   showCreateDialog.value = false
   
   // Reset form
@@ -506,13 +515,15 @@ async function fetchData() {
   try {
     const res = await apiFetch<Certificate[]>('/certificates/')
     if (res.code === 0) {
-      certificates.value = res.data || []
+      certificates.value = Array.isArray(res.data) ? res.data : []
     } else {
-      ElMessage.error(res.message || 'Failed to load certificates')
+      ElMessage.error(res.message || t('certificates.loadError'))
+      certificates.value = []
     }
   } catch (error) {
-    ElMessage.error('Failed to load certificates')
+    ElMessage.error(t('certificates.loadError'))
     console.error('Load certificates error:', error)
+    certificates.value = []
   } finally {
     loading.value = false
   }

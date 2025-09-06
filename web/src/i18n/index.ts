@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
-import en from '../i18n/locales/en-US.json'
-import zh from '../i18n/locales/zh-CN.json'
+import zh from './locales/zh-CN.json'
+import en from './locales/en-US.json'
 
 export type Locale = 'zh-CN' | 'en-US'
 
@@ -40,7 +40,7 @@ const messages = {
   'en-US': en
 }
 
-export const i18n = createI18n({
+const i18n = createI18n({
   legacy: false, // 使用 Composition API
   locale: getStoredLanguage(),
   fallbackLocale: 'en-US',
@@ -56,9 +56,6 @@ export function setLanguage(locale: Locale) {
     
     // 更新 HTML lang 属性
     document.documentElement.lang = locale
-    
-    // 触发页面刷新以应用新语言
-    window.location.reload()
   }
 }
 
@@ -75,5 +72,4 @@ export function getSupportedLanguages() {
   ]
 }
 
-// 初始化时设置 HTML lang 属性
-document.documentElement.lang = getStoredLanguage()
+export default i18n

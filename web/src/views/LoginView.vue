@@ -14,9 +14,9 @@
       <div class="login-header">
         <div class="logo-section">
           <el-icon class="logo-icon"><Lock /></el-icon>
-          <h1 class="app-title gradient-text">{{ $t('ssl_cert_management') }}</h1>
+          <h1 class="app-title gradient-text">{{ $t('dashboard.title') }}</h1>
         </div>
-        <p class="login-subtitle">{{ $t('welcome') }}</p>
+        <p class="login-subtitle">{{ $t('auth.pleaseLogin') }}</p>
       </div>
       
       <el-form 
@@ -28,22 +28,22 @@
         label-position="top"
         size="large"
       >
-        <el-form-item :label="$t('username')" prop="username">
+        <el-form-item :label="$t('auth.username')" prop="username">
           <el-input 
             v-model.trim="form.username" 
             :prefix-icon="User"
-            :placeholder="$t('username')"
+            :placeholder="$t('auth.username')"
             autocomplete="username"
             clearable
           />
         </el-form-item>
         
-        <el-form-item :label="$t('password')" prop="password">
+        <el-form-item :label="$t('auth.password')" prop="password">
           <el-input 
             v-model="form.password" 
             type="password"
             :prefix-icon="Lock"
-            :placeholder="$t('password')"
+            :placeholder="$t('auth.password')"
             show-password
             autocomplete="current-password"
             clearable
@@ -73,7 +73,7 @@
           size="large"
         >
           <el-icon v-if="!auth.loading"><Right /></el-icon>
-          {{ $t('login') }}
+          {{ $t('auth.login') }}
         </el-button>
       </el-form>
       

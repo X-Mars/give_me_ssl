@@ -3,8 +3,8 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">System Settings</h1>
-        <p class="page-subtitle">Configure system preferences and behavior</p>
+        <h1 class="page-title gradient-text">{{ $t('settings.title') }}</h1>
+        <p class="page-subtitle">{{ $t('settings.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <el-button 
@@ -14,7 +14,7 @@
           :loading="saving"
         >
           <el-icon><Check /></el-icon>
-          Save All Changes
+          {{ $t('settings.saveAll') }}
         </el-button>
       </div>
     </div>
@@ -26,28 +26,28 @@
         <div class="section-header">
           <h3 class="section-title">
             <el-icon><Setting /></el-icon>
-            General Settings
+            {{ $t('settings.general') }}
           </h3>
-          <p class="section-description">Basic system configuration</p>
+          <p class="section-description">{{ $t('settings.generalDesc') }}</p>
         </div>
         
         <div class="section-content">
           <el-form :model="settings.general" label-width="200px">
-            <el-form-item label="System Name">
+            <el-form-item :label="$t('settings.systemName')">
               <el-input 
                 v-model="settings.general.system_name"
-                placeholder="SSL Certificate Manager"
+                :placeholder="$t('settings.systemNamePlaceholder')"
               />
             </el-form-item>
             
-            <el-form-item label="Default Language">
+            <el-form-item :label="$t('settings.defaultLanguage')">
               <el-select v-model="settings.general.default_language">
                 <el-option label="English" value="en" />
                 <el-option label="中文" value="zh" />
               </el-select>
             </el-form-item>
             
-            <el-form-item label="Timezone">
+            <el-form-item :label="$t('settings.timezone')">
               <el-select v-model="settings.general.timezone" filterable>
                 <el-option 
                   v-for="tz in timezones"
@@ -58,11 +58,11 @@
               </el-select>
             </el-form-item>
             
-            <el-form-item label="Theme">
+            <el-form-item :label="$t('settings.theme')">
               <el-radio-group v-model="settings.general.theme">
-                <el-radio value="light">Light</el-radio>
-                <el-radio value="dark">Dark</el-radio>
-                <el-radio value="auto">Auto</el-radio>
+                <el-radio value="light">{{ $t('settings.light') }}</el-radio>
+                <el-radio value="dark">{{ $t('settings.dark') }}</el-radio>
+                <el-radio value="auto">{{ $t('settings.auto') }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -74,25 +74,25 @@
         <div class="section-header">
           <h3 class="section-title">
             <el-icon><Document /></el-icon>
-            Certificate Settings
+            {{ $t('settings.certificates') }}
           </h3>
-          <p class="section-description">Default certificate behavior and preferences</p>
+          <p class="section-description">{{ $t('settings.certificatesDesc') }}</p>
         </div>
         
         <div class="section-content">
           <el-form :model="settings.certificates" label-width="200px">
-            <el-form-item label="Auto Renewal">
+            <el-form-item :label="$t('settings.autoRenewal')">
               <el-switch 
                 v-model="settings.certificates.auto_renewal_enabled"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
               <div class="setting-hint">
-                Automatically renew certificates before expiration
+                {{ $t('settings.autoRenewalHint') }}
               </div>
             </el-form-item>
             
-            <el-form-item label="Renewal Buffer Days">
+            <el-form-item :label="$t('settings.renewalBufferDays')">
               <el-input-number 
                 v-model="settings.certificates.renewal_buffer_days"
                 :min="1"
@@ -100,22 +100,22 @@
                 controls-position="right"
               />
               <div class="setting-hint">
-                Start renewal this many days before expiration
+                {{ $t('settings.renewalBufferHint') }}
               </div>
             </el-form-item>
             
-            <el-form-item label="Default Provider">
+            <el-form-item :label="$t('settings.defaultProvider')">
               <el-select 
                 v-model="settings.certificates.default_provider"
-                placeholder="Select default provider"
+                :placeholder="$t('settings.selectProvider')"
               >
                 <el-option label="Let's Encrypt" value="letsencrypt" />
                 <el-option label="ZeroSSL" value="zerossl" />
-                <el-option label="Manual" value="manual" />
+                <el-option :label="$t('settings.manual')" value="manual" />
               </el-select>
             </el-form-item>
             
-            <el-form-item label="Key Size">
+            <el-form-item :label="$t('settings.keySize')">
               <el-select v-model="settings.certificates.default_key_size">
                 <el-option label="2048 bits" :value="2048" />
                 <el-option label="4096 bits" :value="4096" />
@@ -130,23 +130,23 @@
         <div class="section-header">
           <h3 class="section-title">
             <el-icon><Bell /></el-icon>
-            Notification Settings
+            {{ $t('settings.notifications') }}
           </h3>
-          <p class="section-description">Configure alerts and notifications</p>
+          <p class="section-description">{{ $t('settings.notificationsDesc') }}</p>
         </div>
         
         <div class="section-content">
           <el-form :model="settings.notifications" label-width="200px">
-            <el-form-item label="Email Notifications">
+            <el-form-item :label="$t('settings.emailNotifications')">
               <el-switch 
                 v-model="settings.notifications.email_enabled"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
             </el-form-item>
             
             <el-form-item 
-              label="SMTP Server"
+              :label="$t('settings.smtpServer')"
               v-if="settings.notifications.email_enabled"
             >
               <el-input 
@@ -156,7 +156,7 @@
             </el-form-item>
             
             <el-form-item 
-              label="SMTP Port"
+              :label="$t('settings.smtpPort')"
               v-if="settings.notifications.email_enabled"
             >
               <el-input-number 
@@ -168,7 +168,7 @@
             </el-form-item>
             
             <el-form-item 
-              label="Username"
+              :label="$t('settings.username')"
               v-if="settings.notifications.email_enabled"
             >
               <el-input 
@@ -178,36 +178,36 @@
             </el-form-item>
             
             <el-form-item 
-              label="Password"
+              :label="$t('settings.password')"
               v-if="settings.notifications.email_enabled"
             >
               <el-input 
                 v-model="settings.notifications.smtp_password"
                 type="password"
                 show-password
-                placeholder="SMTP password"
+                :placeholder="$t('settings.smtpPassword')"
               />
             </el-form-item>
             
-            <el-form-item label="Expiry Notifications">
+            <el-form-item :label="$t('settings.expiryNotifications')">
               <el-switch 
                 v-model="settings.notifications.expiry_notifications"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
               <div class="setting-hint">
-                Send notifications when certificates are about to expire
+                {{ $t('settings.expiryNotificationsHint') }}
               </div>
             </el-form-item>
             
-            <el-form-item label="Success Notifications">
+            <el-form-item :label="$t('settings.successNotifications')">
               <el-switch 
                 v-model="settings.notifications.success_notifications"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
               <div class="setting-hint">
-                Send notifications when certificates are successfully renewed
+                {{ $t('settings.successNotificationsHint') }}
               </div>
             </el-form-item>
           </el-form>
@@ -219,43 +219,43 @@
         <div class="section-header">
           <h3 class="section-title">
             <el-icon><Lock /></el-icon>
-            Security Settings
+            {{ $t('settings.security') }}
           </h3>
-          <p class="section-description">Authentication and access control</p>
+          <p class="section-description">{{ $t('settings.securityDesc') }}</p>
         </div>
         
         <div class="section-content">
           <el-form :model="settings.security" label-width="200px">
-            <el-form-item label="Session Timeout">
+            <el-form-item :label="$t('settings.sessionTimeout')">
               <el-select v-model="settings.security.session_timeout">
-                <el-option label="1 hour" :value="3600" />
-                <el-option label="4 hours" :value="14400" />
-                <el-option label="8 hours" :value="28800" />
-                <el-option label="24 hours" :value="86400" />
+                <el-option :label="$t('settings.oneHour')" :value="3600" />
+                <el-option :label="$t('settings.fourHours')" :value="14400" />
+                <el-option :label="$t('settings.eightHours')" :value="28800" />
+                <el-option :label="$t('settings.twentyFourHours')" :value="86400" />
               </el-select>
             </el-form-item>
             
-            <el-form-item label="Force HTTPS">
+            <el-form-item :label="$t('settings.forceHttps')">
               <el-switch 
                 v-model="settings.security.force_https"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
               <div class="setting-hint">
-                Redirect all HTTP requests to HTTPS
+                {{ $t('settings.forceHttpsHint') }}
               </div>
             </el-form-item>
             
-            <el-form-item label="API Rate Limiting">
+            <el-form-item :label="$t('settings.apiRateLimiting')">
               <el-switch 
                 v-model="settings.security.rate_limiting_enabled"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
             </el-form-item>
             
             <el-form-item 
-              label="Requests per minute"
+              :label="$t('settings.requestsPerMinute')"
               v-if="settings.security.rate_limiting_enabled"
             >
               <el-input-number 
@@ -274,34 +274,34 @@
         <div class="section-header">
           <h3 class="section-title">
             <el-icon><FolderOpened /></el-icon>
-            Backup & Storage
+            {{ $t('settings.backup') }}
           </h3>
-          <p class="section-description">Data backup and storage configuration</p>
+          <p class="section-description">{{ $t('settings.backupDesc') }}</p>
         </div>
         
         <div class="section-content">
           <el-form :model="settings.backup" label-width="200px">
-            <el-form-item label="Auto Backup">
+            <el-form-item :label="$t('settings.autoBackup')">
               <el-switch 
                 v-model="settings.backup.auto_backup_enabled"
-                active-text="Enabled"
-                inactive-text="Disabled"
+                :active-text="$t('common.enabled')"
+                :inactive-text="$t('common.disabled')"
               />
             </el-form-item>
             
             <el-form-item 
-              label="Backup Frequency"
+              :label="$t('settings.backupFrequency')"
               v-if="settings.backup.auto_backup_enabled"
             >
               <el-select v-model="settings.backup.backup_frequency">
-                <el-option label="Daily" value="daily" />
-                <el-option label="Weekly" value="weekly" />
-                <el-option label="Monthly" value="monthly" />
+                <el-option :label="$t('settings.daily')" value="daily" />
+                <el-option :label="$t('settings.weekly')" value="weekly" />
+                <el-option :label="$t('settings.monthly')" value="monthly" />
               </el-select>
             </el-form-item>
             
             <el-form-item 
-              label="Backup Retention"
+              :label="$t('settings.backupRetention')"
               v-if="settings.backup.auto_backup_enabled"
             >
               <el-input-number 
@@ -311,11 +311,11 @@
                 controls-position="right"
               />
               <div class="setting-hint">
-                Number of days to keep backup files
+                {{ $t('settings.backupRetentionHint') }}
               </div>
             </el-form-item>
             
-            <el-form-item label="Storage Path">
+            <el-form-item :label="$t('settings.storagePath')">
               <el-input 
                 v-model="settings.backup.storage_path"
                 placeholder="/var/backups/ssl-manager"
@@ -325,7 +325,7 @@
             <el-form-item>
               <el-button @click="createBackup" :loading="creatingBackup">
                 <el-icon><Download /></el-icon>
-                Create Backup Now
+                {{ $t('settings.createBackupNow') }}
               </el-button>
             </el-form-item>
           </el-form>
@@ -342,6 +342,15 @@ import {
   Check, Setting, Document, Bell, Lock, FolderOpened, Download
 } from '@element-plus/icons-vue'
 import { apiFetch } from '../utils/http'
+
+interface PlatformSetting {
+  id: number
+  key: string
+  value: string
+  description: string
+  created_at: string
+  updated_at: string
+}
 
 interface SettingsData {
   general: {
@@ -432,10 +441,28 @@ const timezones = [
 // Methods
 async function loadSettings() {
   try {
-    const result = await apiFetch<SettingsData>('/system-settings/')
-    if (result.code === 0 && result.data) {
+    const result = await apiFetch<PlatformSetting[]>('/platform-settings/')
+    if (result.code === 0 && Array.isArray(result.data)) {
+      // Convert key-value pairs to structured settings
+      const loadedSettings: Record<string, any> = {}
+      result.data.forEach((setting: PlatformSetting) => {
+        const keys = setting.key.split('.')
+        let current = loadedSettings
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!current[keys[i]]) {
+            current[keys[i]] = {}
+          }
+          current = current[keys[i]]
+        }
+        try {
+          current[keys[keys.length - 1]] = JSON.parse(setting.value)
+        } catch {
+          current[keys[keys.length - 1]] = setting.value
+        }
+      })
+      
       // Merge loaded settings with defaults
-      Object.assign(settings, result.data)
+      Object.assign(settings, loadedSettings)
     }
   } catch (error) {
     console.error('Load settings error:', error)
@@ -446,16 +473,64 @@ async function loadSettings() {
 async function saveAllSettings() {
   saving.value = true
   try {
-    const result = await apiFetch('/system-settings/', {
-      method: 'POST',
-      body: JSON.stringify(settings)
-    })
+    // Convert structured settings to key-value pairs
+    const settingsArray: Array<{key: string, value: string}> = []
     
-    if (result.code === 0) {
-      ElMessage.success('Settings saved successfully')
-    } else {
-      ElMessage.error(result.message || 'Failed to save settings')
+    function flattenSettings(obj: Record<string, unknown>, prefix = '') {
+      for (const [key, value] of Object.entries(obj)) {
+        const fullKey = prefix ? `${prefix}.${key}` : key
+        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+          flattenSettings(value as Record<string, unknown>, fullKey)
+        } else {
+          settingsArray.push({
+            key: fullKey,
+            value: JSON.stringify(value)
+          })
+        }
+      }
     }
+    
+    flattenSettings(settings)
+    
+    // First get existing settings to check which ones to update vs create
+    const existingResult = await apiFetch<PlatformSetting[]>('/platform-settings/')
+    const existingKeys = new Set(
+      Array.isArray(existingResult.data) ? existingResult.data.map(s => s.key) : []
+    )
+    
+    // Save each setting individually
+    for (const setting of settingsArray) {
+      try {
+        if (existingKeys.has(setting.key)) {
+          // Update existing setting - find the ID first
+          const existing = (existingResult.data as PlatformSetting[]).find(s => s.key === setting.key)
+          if (existing) {
+            await apiFetch(`/platform-settings/${existing.id}/`, {
+              method: 'PUT',
+              body: JSON.stringify({
+                key: setting.key,
+                value: setting.value,
+                description: ''
+              })
+            })
+          }
+        } else {
+          // Create new setting
+          await apiFetch('/platform-settings/', {
+            method: 'POST',
+            body: JSON.stringify({
+              key: setting.key,
+              value: setting.value,
+              description: ''
+            })
+          })
+        }
+      } catch (error) {
+        console.error(`Failed to save setting ${setting.key}:`, error)
+      }
+    }
+    
+    ElMessage.success('Settings saved successfully')
   } catch (error) {
     ElMessage.error('Failed to save settings')
     console.error('Save settings error:', error)
@@ -467,7 +542,7 @@ async function saveAllSettings() {
 async function createBackup() {
   creatingBackup.value = true
   try {
-    const result = await apiFetch('/system-settings/backup/', {
+    const result = await apiFetch('/platform-settings/backup/', {
       method: 'POST'
     })
     
@@ -491,7 +566,7 @@ onMounted(() => {
 
 <style scoped>
 .settings-page {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 

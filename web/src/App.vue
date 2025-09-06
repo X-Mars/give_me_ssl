@@ -3,11 +3,15 @@ import { RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { setLanguage, getCurrentLanguage, type Locale } from './plugins/i18n'
+import { 
+  Menu, Operation, SwitchButton
+} from '@element-plus/icons-vue'
 
 const auth = useAuthStore()
 const collapsed = ref(false)
 const router = useRouter()
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 function logout() { 
   auth.logout()
@@ -15,15 +19,17 @@ function logout() {
 }
 
 function toggleLocale() {
-  locale.value = locale.value === 'zh-CN' ? 'en' : 'zh-CN'
+  const currentLang = getCurrentLanguage()
+  const newLang: Locale = currentLang === 'zh-CN' ? 'en-US' : 'zh-CN'
+  setLanguage(newLang)
 }
 
 const menuItems = computed(() => [
-  { index: '/', icon: 'Grid', title: t('dashboard') },
-  { index: '/certificates', icon: 'Document', title: t('certificates') },
-  { index: '/providers', icon: 'Setting', title: t('providers') },
-  { index: '/settings', icon: 'Tools', title: t('settings') },
-  { index: '/about', icon: 'InfoFilled', title: t('about') }
+  { index: '/', icon: 'Grid', title: t('nav.dashboard') },
+  { index: '/certificates', icon: 'Document', title: t('nav.certificates') },
+  { index: '/providers', icon: 'Setting', title: t('nav.providers') },
+  { index: '/settings', icon: 'Tools', title: t('nav.settings') },
+  { index: '/about', icon: 'InfoFilled', title: t('nav.about') }
 ])
 </script>
 
@@ -71,7 +77,7 @@ const menuItems = computed(() => [
             size="small"
           >
             <el-icon><SwitchButton /></el-icon>
-            {{ t('logout') }}
+            {{ t('nav.logout') }}
           </el-button>
           <el-button 
             v-else
@@ -98,7 +104,7 @@ const menuItems = computed(() => [
             >
               <el-icon><Menu /></el-icon>
             </el-button>
-            <h1 class="page-title">{{ $route.meta.title || t('dashboard') }}</h1>
+            <h1 class="page-title">{{ $route.meta.title || t('nav.dashboard') }}</h1>
           </div>
           
           <div class="topbar-right">
@@ -108,7 +114,7 @@ const menuItems = computed(() => [
               text
               circle
             >
-              <el-icon><Globe /></el-icon>
+              <el-icon><Operation /></el-icon>
             </el-button>
             
             <div class="user-info">
@@ -126,9 +132,11 @@ const menuItems = computed(() => [
 
         <!-- Page Content -->
         <main class="page-content">
-          <transition name="fade" mode="out-in">
-            <RouterView />
-          </transition>
+          <RouterView v-slot="{ Component }">
+            <transition name="fade" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </RouterView>
         </main>
       </div>
     </div>

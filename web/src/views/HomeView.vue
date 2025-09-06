@@ -3,13 +3,13 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">{{ $t('dashboard') }}</h1>
-        <p class="page-subtitle">{{ $t('welcome') }}, {{ auth.user?.username }}!</p>
+        <h1 class="page-title gradient-text">{{ $t('nav.dashboard') }}</h1>
+        <p class="page-subtitle">{{ $t('dashboard.welcome') }}, {{ auth.user?.username }}!</p>
       </div>
       <div class="header-actions">
         <el-button type="primary" class="btn-gradient">
           <el-icon><Plus /></el-icon>
-          {{ $t('create') }} Certificate
+          {{ $t('certificates.newCertificate') }}
         </el-button>
       </div>
     </div>
@@ -20,7 +20,7 @@
         <div class="stat-content">
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.totalCerts }}</h3>
-            <p class="stat-label">Total Certificates</p>
+            <p class="stat-label">{{ t('dashboard.totalCertificates') }}</p>
           </div>
           <div class="stat-icon">
             <el-icon class="icon-primary"><Document /></el-icon>
@@ -28,7 +28,7 @@
         </div>
         <div class="stat-trend">
           <span class="trend-value positive">+12%</span>
-          <span class="trend-label">vs last month</span>
+          <span class="trend-label">{{ t('dashboard.vsLastMonth') }}</span>
         </div>
       </div>
 
@@ -36,7 +36,7 @@
         <div class="stat-content">
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.activeCerts }}</h3>
-            <p class="stat-label">Active Certificates</p>
+            <p class="stat-label">{{ t('dashboard.activeCertificates') }}</p>
           </div>
           <div class="stat-icon">
             <el-icon class="icon-success"><CircleCheck /></el-icon>
@@ -44,7 +44,7 @@
         </div>
         <div class="stat-trend">
           <span class="trend-value positive">+8%</span>
-          <span class="trend-label">vs last month</span>
+          <span class="trend-label">{{ t('dashboard.vsLastMonth') }}</span>
         </div>
       </div>
 
@@ -52,7 +52,7 @@
         <div class="stat-content">
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.expiringCerts }}</h3>
-            <p class="stat-label">Expiring Soon</p>
+            <p class="stat-label">{{ t('dashboard.expiringSoon') }}</p>
           </div>
           <div class="stat-icon">
             <el-icon class="icon-warning"><Warning /></el-icon>
@@ -60,7 +60,7 @@
         </div>
         <div class="stat-trend">
           <span class="trend-value negative">+3</span>
-          <span class="trend-label">this week</span>
+          <span class="trend-label">{{ t('dashboard.thisWeek') }}</span>
         </div>
       </div>
 
@@ -68,14 +68,14 @@
         <div class="stat-content">
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.providers }}</h3>
-            <p class="stat-label">Providers</p>
+            <p class="stat-label">{{ t('dashboard.providers') }}</p>
           </div>
           <div class="stat-icon">
             <el-icon class="icon-info"><Setting /></el-icon>
           </div>
         </div>
         <div class="stat-trend">
-          <span class="trend-value">{{ stats.providers }} configured</span>
+          <span class="trend-value">{{ t('dashboard.providersConfigured', { count: stats.providers }) }}</span>
         </div>
       </div>
     </div>
@@ -85,17 +85,17 @@
       <!-- Recent Certificates -->
       <div class="content-card glass-card">
         <div class="card-header">
-          <h3 class="card-title">Recent Certificates</h3>
+          <h3 class="card-title">{{ t('dashboard.recentCertificates') }}</h3>
           <el-button text @click="$router.push('/certificates')">
-            View All <el-icon><Right /></el-icon>
+            {{ t('dashboard.viewAll') }} <el-icon><Right /></el-icon>
           </el-button>
         </div>
         <div class="card-content">
           <div v-if="recentCerts.length === 0" class="empty-state">
             <el-icon class="empty-icon"><Document /></el-icon>
-            <p class="empty-text">No certificates yet</p>
+            <p class="empty-text">{{ t('dashboard.noCertificatesYet') }}</p>
             <el-button type="primary" class="btn-gradient" @click="$router.push('/certificates')">
-              Create First Certificate
+              {{ t('dashboard.createFirstCertificate') }}
             </el-button>
           </div>
           <div v-else class="cert-list">
@@ -124,25 +124,25 @@
       <!-- Quick Actions -->
       <div class="content-card glass-card">
         <div class="card-header">
-          <h3 class="card-title">Quick Actions</h3>
+          <h3 class="card-title">{{ t('dashboard.quickActions') }}</h3>
         </div>
         <div class="card-content">
           <div class="action-grid">
             <div class="action-item" @click="$router.push('/certificates')">
               <el-icon class="action-icon"><Document /></el-icon>
-              <span class="action-text">Manage Certificates</span>
+              <span class="action-text">{{ t('dashboard.manageCertificates') }}</span>
             </div>
             <div class="action-item" @click="$router.push('/providers')">
               <el-icon class="action-icon"><Setting /></el-icon>
-              <span class="action-text">Configure Providers</span>
+              <span class="action-text">{{ t('dashboard.configureProviders') }}</span>
             </div>
             <div class="action-item" @click="$router.push('/settings')">
               <el-icon class="action-icon"><Tools /></el-icon>
-              <span class="action-text">System Settings</span>
+              <span class="action-text">{{ t('dashboard.systemSettings') }}</span>
             </div>
             <div class="action-item">
               <el-icon class="action-icon"><Bell /></el-icon>
-              <span class="action-text">Notifications</span>
+              <span class="action-text">{{ t('dashboard.notifications') }}</span>
             </div>
           </div>
         </div>
@@ -153,12 +153,12 @@
     <div class="chart-section">
       <div class="content-card glass-card">
         <div class="card-header">
-          <h3 class="card-title">Certificate Status Overview</h3>
+          <h3 class="card-title">{{ t('dashboard.certificateStatusOverview') }}</h3>
           <div class="chart-controls">
             <el-select v-model="chartPeriod" size="small">
-              <el-option label="Last 7 days" value="7d" />
-              <el-option label="Last 30 days" value="30d" />
-              <el-option label="Last 90 days" value="90d" />
+              <el-option :label="t('dashboard.last7Days')" value="7d" />
+              <el-option :label="t('dashboard.last30Days')" value="30d" />
+              <el-option :label="t('dashboard.last90Days')" value="90d" />
             </el-select>
           </div>
         </div>
@@ -167,7 +167,7 @@
             <!-- Chart will be rendered here -->
             <div class="chart-placeholder">
               <el-icon class="chart-icon"><TrendCharts /></el-icon>
-              <p>Certificate analytics chart will be displayed here</p>
+              <p>{{ t('dashboard.chartPlaceholder') }}</p>
             </div>
           </div>
         </div>
@@ -179,10 +179,13 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { useI18n } from 'vue-i18n'
 import { 
   Plus, Document, CircleCheck, Warning, Setting, Right, 
   Tools, Bell, TrendCharts 
 } from '@element-plus/icons-vue'
+
+const { t } = useI18n()
 
 interface Certificate {
   id: number

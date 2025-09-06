@@ -3,13 +3,13 @@
     <!-- Page Header -->
     <div class="page-header">
       <div class="header-content">
-        <h1 class="page-title gradient-text">SSL Providers</h1>
-        <p class="page-subtitle">Configure and manage your SSL certificate providers</p>
+        <h1 class="page-title gradient-text">{{ $t('providers.title') }}</h1>
+        <p class="page-subtitle">{{ $t('providers.subtitle') }}</p>
       </div>
       <div class="header-actions">
         <el-button type="primary" class="btn-gradient" @click="showCreateDialog = true">
           <el-icon><Plus /></el-icon>
-          Add Provider
+          {{ $t('providers.addProvider') }}
         </el-button>
       </div>
     </div>
@@ -17,7 +17,7 @@
     <!-- Provider Cards -->
     <div class="providers-grid">
       <div 
-        v-for="provider in providers"
+        v-for="provider in providers.filter(p => p && p.id)"
         :key="provider.id"
         class="provider-card glass-card card-hover"
       >
@@ -40,7 +40,7 @@
               type="success"
               size="small"
             >
-              Active
+              {{ $t('providers.active') }}
             </el-tag>
           </div>
         </div>
@@ -48,11 +48,11 @@
         <div class="provider-stats">
           <div class="stat-item">
             <span class="stat-value">{{ provider.certificate_count || 0 }}</span>
-            <span class="stat-label">Certificates</span>
+            <span class="stat-label">{{ $t('providers.certificates') }}</span>
           </div>
           <div class="stat-item">
             <span class="stat-value">{{ formatDate(provider.created_at) }}</span>
-            <span class="stat-label">Created</span>
+            <span class="stat-label">{{ $t('providers.created') }}</span>
           </div>
         </div>
 
@@ -62,7 +62,7 @@
             @click="editProvider(provider)"
           >
             <el-icon><Edit /></el-icon>
-            Configure
+            {{ $t('providers.configure') }}
           </el-button>
           <el-button 
             size="small" 
@@ -70,15 +70,15 @@
             :loading="testingProvider === provider.id"
           >
             <el-icon><Connection /></el-icon>
-            Test
+            {{ $t('providers.test') }}
           </el-button>
-          <el-dropdown @command="(cmd) => handleProviderAction(cmd, provider)">
+          <el-dropdown @command="createProviderDropdownHandler(provider)">
             <el-button size="small">
               <el-icon><MoreFilled /></el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item command="delete" divided>Delete</el-dropdown-item>
+                <el-dropdown-item command="delete" divided>{{ $t('common.delete') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -89,15 +89,15 @@
       <div class="add-provider-card glass-card" @click="showCreateDialog = true">
         <div class="add-provider-content">
           <el-icon class="add-icon"><Plus /></el-icon>
-          <h3>Add New Provider</h3>
-          <p>Configure a new SSL certificate provider</p>
+          <h3>{{ $t('providers.addNew') }}</h3>
+          <p>{{ $t('providers.configureNew') }}</p>
         </div>
       </div>
     </div>
 
     <!-- Provider Templates -->
     <div class="templates-section">
-      <h2 class="section-title">Quick Setup Templates</h2>
+      <h2 class="section-title">{{ $t('providers.quickSetup') }}</h2>
       <div class="templates-grid">
         <div 
           v-for="template in providerTemplates"
@@ -131,7 +131,7 @@
     <!-- Create/Edit Provider Dialog -->
     <el-dialog
       v-model="showCreateDialog"
-      :title="editingProvider ? 'Edit Provider' : 'Add New Provider'"
+      :title="editingProvider ? t('providers.editProvider') : t('providers.addNewProvider')"
       width="600px"
       :close-on-click-modal="false"
     >
@@ -142,10 +142,10 @@
           :rules="formRules"
           label-width="140px"
         >
-          <el-form-item label="Provider Type" prop="provider">
+          <el-form-item :label="t('providers.providerType')" prop="provider">
             <el-select 
               v-model="providerForm.provider" 
-              placeholder="Select provider type"
+              :placeholder="t('providers.selectProviderType')"
             >
               <el-option 
                 v-for="option in providerOptions"
@@ -156,29 +156,29 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="Access Key" prop="access_key">
+          <el-form-item :label="t('providers.accessKey')" prop="access_key">
             <el-input 
               v-model="providerForm.access_key" 
               type="password"
-              placeholder="Enter API key or access token"
+              :placeholder="t('providers.enterAccessKey')"
               show-password
             />
           </el-form-item>
 
-          <el-form-item label="Secret Key">
+          <el-form-item :label="t('providers.secretKey')">
             <el-input 
               v-model="providerForm.secret_key" 
               type="password"
-              placeholder="Enter secret key (if required)"
+              :placeholder="t('providers.enterSecretKey')"
               show-password
             />
           </el-form-item>
 
-          <el-form-item label="Config">
+          <el-form-item :label="t('providers.config')">
             <el-input 
               v-model="providerForm.config" 
               type="textarea"
-              placeholder="Additional configuration (JSON format)"
+              :placeholder="t('providers.additionalConfig')"
               :rows="3"
             />
           </el-form-item>
@@ -186,13 +186,13 @@
       </div>
       
       <template #footer>
-        <el-button @click="cancelEdit">Cancel</el-button>
+        <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
         <el-button 
           type="primary" 
           @click="saveProvider"
           :loading="saving"
         >
-          {{ editingProvider ? 'Update' : 'Create' }}
+          {{ editingProvider ? t('common.update') : t('common.create') }}
         </el-button>
       </template>
     </el-dialog>
@@ -200,12 +200,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 import {
   Plus, Key, Lock, Setting, Edit, Connection, MoreFilled
 } from '@element-plus/icons-vue'
 import { apiFetch } from '../utils/http'
+
+const { t } = useI18n()
 
 interface Provider {
   id: number
@@ -240,8 +243,8 @@ const providerForm = reactive({
 })
 
 const formRules = {
-  provider: [{ required: true, message: 'Please select provider type' }],
-  access_key: [{ required: true, message: 'Please enter access key' }]
+  provider: [{ required: true, message: t('providers.selectProviderTypeRequired') }],
+  access_key: [{ required: true, message: t('providers.enterAccessKeyRequired') }]
 }
 
 const providerOptions = [
@@ -251,29 +254,48 @@ const providerOptions = [
   { label: 'DigitalOcean', value: 'digitalocean' }
 ]
 
-const providerTemplates: ProviderTemplate[] = [
+const providerTemplates = computed(() => [
   {
     type: 'letsencrypt',
-    name: "Let's Encrypt",
-    description: 'Free SSL certificates with automatic renewal',
-    features: ['Free', 'Auto-renewal', 'Domain validation']
+    name: t('providers.templates.letsencrypt.name'),
+    description: t('providers.templates.letsencrypt.description'),
+    features: [
+      t('providers.templates.letsencrypt.features.free'),
+      t('providers.templates.letsencrypt.features.autoRenewal'),
+      t('providers.templates.letsencrypt.features.domainValidation')
+    ]
   },
   {
     type: 'zerossl',
-    name: 'ZeroSSL',
-    description: 'Free and paid SSL certificates with API support',
-    features: ['Free tier', 'API integration', 'Extended validation']
+    name: t('providers.templates.zerossl.name'),
+    description: t('providers.templates.zerossl.description'),
+    features: [
+      t('providers.templates.zerossl.features.freeTier'),
+      t('providers.templates.zerossl.features.apiIntegration'),
+      t('providers.templates.zerossl.features.extendedValidation')
+    ]
   },
   {
     type: 'cloudflare',
-    name: 'Cloudflare',
-    description: 'SSL certificates through Cloudflare DNS',
-    features: ['DNS integration', 'Fast deployment', 'CDN included']
+    name: t('providers.templates.cloudflare.name'),
+    description: t('providers.templates.cloudflare.description'),
+    features: [
+      t('providers.templates.cloudflare.features.dnsIntegration'),
+      t('providers.templates.cloudflare.features.fastDeployment'),
+      t('providers.templates.cloudflare.features.cdnIncluded')
+    ]
   }
-]
+])
 
 // Methods
-function getProviderName(type: string) {
+// Helper to create dropdown command handler for a specific provider
+const createProviderDropdownHandler = (provider: Provider) => {
+  return (cmd: unknown) => handleProviderAction(cmd, provider)
+}
+
+function getProviderName(type: string | null | undefined) {
+  if (!type) return 'Unknown Provider'
+  
   switch (type) {
     case 'letsencrypt': return "Let's Encrypt"
     case 'zerossl': return 'ZeroSSL'
@@ -349,15 +371,15 @@ async function saveProvider() {
     }
 
     if (result.code === 0) {
-      ElMessage.success(editingProvider.value ? 'Provider updated' : 'Provider created')
+      ElMessage.success(editingProvider.value ? t('providers.providerUpdated') : t('providers.providerCreated'))
       showCreateDialog.value = false
       await loadProviders()
       cancelEdit()
     } else {
-      ElMessage.error(result.message || 'Failed to save provider')
+      ElMessage.error(result.message || t('providers.saveProviderError'))
     }
   } catch (error) {
-    ElMessage.error('Failed to save provider')
+    ElMessage.error(t('providers.saveProviderError'))
     console.error('Save provider error:', error)
   } finally {
     saving.value = false
@@ -369,17 +391,18 @@ async function testProvider(provider: Provider) {
   try {
     // Mock test for now
     await new Promise(resolve => setTimeout(resolve, 1000))
-    ElMessage.success('Provider connection test passed')
+    ElMessage.success(t('providers.testSuccess'))
   } catch (error) {
-    ElMessage.error('Provider test failed')
+    ElMessage.error(t('providers.testError'))
     console.error('Test provider error:', error)
   } finally {
     testingProvider.value = null
   }
 }
 
-function handleProviderAction(command: string, provider: Provider) {
-  if (command === 'delete') {
+function handleProviderAction(command: unknown, provider: Provider) {
+  const cmd = String(command)
+  if (cmd === 'delete') {
     deleteProvider(provider)
   }
 }
@@ -387,11 +410,11 @@ function handleProviderAction(command: string, provider: Provider) {
 async function deleteProvider(provider: Provider) {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete the provider "${getProviderName(provider.provider)}"?`,
-      'Confirm Deletion',
+      t('providers.deleteConfirmMessage', { name: getProviderName(provider.provider) }),
+      t('providers.deleteConfirmTitle'),
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'error'
       }
     )
@@ -402,13 +425,13 @@ async function deleteProvider(provider: Provider) {
     
     if (result.code === 0) {
       await loadProviders()
-      ElMessage.success('Provider deleted')
+      ElMessage.success(t('providers.deleteSuccess'))
     } else {
-      ElMessage.error(result.message || 'Failed to delete provider')
+      ElMessage.error(result.message || t('providers.deleteError'))
     }
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error('Failed to delete provider')
+      ElMessage.error(t('providers.deleteError'))
       console.error('Delete provider error:', error)
     }
   }
@@ -418,13 +441,26 @@ async function loadProviders() {
   try {
     const result = await apiFetch<Provider[]>('/provider-credentials/')
     if (result.code === 0) {
-      providers.value = result.data || []
+      // Ensure result.data is an array before filtering
+      const dataArray = Array.isArray(result.data) ? result.data : []
+      
+      // Filter out invalid providers and ensure all have required properties
+      const validProviders = dataArray.filter((provider): provider is Provider => 
+        provider && 
+        typeof provider === 'object' && 
+        provider.id !== null && 
+        provider.id !== undefined &&
+        typeof provider.provider === 'string'
+      )
+      providers.value = validProviders
     } else {
-      ElMessage.error(result.message || 'Failed to load providers')
+      ElMessage.error(result.message || t('providers.loadError'))
+      providers.value = []
     }
   } catch (error) {
-    ElMessage.error('Failed to load providers')
+    ElMessage.error(t('providers.loadError'))
     console.error('Load providers error:', error)
+    providers.value = []
   }
 }
 
